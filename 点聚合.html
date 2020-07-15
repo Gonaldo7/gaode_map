@@ -1,0 +1,216 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no, width=device-width">
+    <title>高德地图点聚合</title>
+    <style>
+        html,
+        body {
+            margin: 0;
+            padding: 0;
+        }
+        
+        .box {
+            width: 100%;
+            height: 100vh;
+            position: relative;
+        }
+        
+        #map {
+            height: 100%;
+            width: 100%;
+            position: absolute;
+            left: 0;
+            top: 0;
+        }
+        /*-- 点聚合字体自定义修改 --*/
+        
+        .amap-marker .amap-marker-content div {
+            font-size: 16px !important;
+            color: #303133;
+            font-weight: bold;
+        }
+        
+        .amap-marker-label {
+            border: 0;
+            background-color: transparent;
+        }
+        
+        .marker-info {
+            position: relative;
+            top: 0;
+            right: 0;
+            min-width: 0;
+            background-color: white;
+            padding: 3px 10px 3px 10px;
+            border: 1px solid skyblue;
+            color: skyblue;
+            font-size: 12px;
+        }
+        /*-- 弹窗自定义css --*/
+        
+        .info-window {
+            box-sizing: border-box;
+            padding: 5px 15px 15px 15px;
+            background-color: white;
+            border-radius: 10px;
+            max-width: 300px;
+            position: relative;
+            border: 1px solid #DCDFE6;
+        }
+        
+        .info-window::after {
+            content: "";
+            position: absolute;
+            right: 50%;
+            margin-right: -7.5px;
+            bottom: -8.5px;
+            width: 15px;
+            height: 15px;
+            background-color: white;
+            transform: rotate(-45deg);
+            border: 1px solid #DCDFE6;
+            border-top: none;
+            border-right: none;
+        }
+        
+        .info-window>.bt {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            color: #303133;
+            font-size: 16px;
+            height: 0;
+        }
+        
+        .info-window>.bt .del {
+            font-size: 14px;
+            display: block;
+            width: 20px;
+            height: 20px;
+            color: #909399;
+            border: 1px solid #909399;
+            text-align: center;
+            line-height: 20px;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+        
+        .info-window .nr {
+            padding-top: 5px;
+            font-size: 14px;
+            color: #606266;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="box">
+        <div id="map"></div>
+    </div>
+    <script type="text/javascript">
+        // 异步加载地图
+        var url = 'https://webapi.amap.com/maps?v=1.4.15&key=213a46a4fa08833acd702ae048a2148a&plugin=AMap.MarkerClusterer,AMap.MapType&callback=asyncMap';
+        var jsapi = document.createElement('script');
+        jsapi.charset = 'utf-8';
+        jsapi.src = url;
+        document.head.appendChild(jsapi);
+        var map = null,
+            cluster,
+            markers = [];
+
+        function asyncMap() {
+            map = new AMap.Map("map", {
+                resizeEnable: true,
+                center: [106.559389, 29.559821],
+                zoom: 14
+            });
+            // 设置卫星地图
+            map.addControl(new AMap.MapType({
+                defaultType: 0 // 0普通 1卫星
+            }));
+            // 视图位置切换
+            // setTimeout(() => {
+            //     map.setCenter([116.322056, 39.89491])
+            // }, 3000)
+            gatherMarker()
+        }
+
+        // 定义聚合点
+        function gatherMarker() {
+            // 自定义点列表
+            let points = [{
+                lnglat: [106.559389, 29.559821],
+                info: '解放碑'
+            }, {
+                lnglat: [106.554454, 29.558627],
+                info: '朝天门'
+            }, {
+                lnglat: [106.576556, 29.557507],
+                info: '观音桥'
+            }, {
+                lnglat: [106.547802, 29.556723],
+                info: '上新街'
+            }, {
+                lnglat: [106.576061, 29.554959],
+                info: '龙湖时代天街'
+            }, {
+                lnglat: [106.563135, 29.554881],
+                info: '沙坪坝'
+            }];
+            points.forEach(function(item, index) {
+                    const marker = new AMap.Marker({
+                            position: new AMap.LngLat(item.lnglat[0], item.lnglat[1]),
+                            offset: new AMap.Pixel(-16, -32), // 偏移量是以自定义图标的左上角为顶点 所以在计算准确位置时则为（-width/2 , -height）;
+                            icon: './fault.png'
+                        })
+                        // 坐标点下方标注文字
+                    marker.setLabel({
+                        offset: new AMap.Pixel(0, 5), //设置文本标注偏移量
+                        content: `<div class='marker-info'>${item.info}</div>`, //设置文本标注内容
+                        direction: 'bottom' //设置文本标注方位
+                    });
+                    markers.push(marker)
+                    marker.on('click', () => {
+                        openInfo(item)
+                    })
+                })
+                // 点聚合自定义图标
+            var sts = [{
+                url: "./theyro.png",
+                size: new AMap.Size(64, 64),
+                offset: new AMap.Pixel(-32, -32)
+            }];
+            cluster = new AMap.MarkerClusterer(map, markers, {
+                styles: sts,
+                gridSize: 80
+            });
+        }
+
+        // 自定义弹窗
+        function openInfo(item) {
+            var info = `<div class="info-window">
+                            <p class="bt">标题 <span onclick="closeWindow()" class="del"> x </span> </p>
+                            <div class="nr">所在位置: 重庆市渝北区</div>
+                            <div class="nr">详细位置: 重庆市两江新区洪湖东路</div>
+                        </div>`;
+            infoWindow = new AMap.InfoWindow({
+                content: info, //使用默认信息窗体框样式，显示信息内容
+                offset: new AMap.Pixel(0, -32),
+                isCustom: true,
+            });
+
+            infoWindow.open(map, new AMap.LngLat(item.lnglat[0], item.lnglat[1]));
+        }
+
+        // 关闭弹窗
+        function closeWindow() {
+            map.clearInfoWindow();
+        }
+    </script>
+</body>
+
+</html>

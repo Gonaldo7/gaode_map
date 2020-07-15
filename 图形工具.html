@@ -1,0 +1,178 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no, width=device-width">
+    <style>
+        html,
+        body {
+            margin: 0;
+            padding: 0;
+        }
+        
+        .box {
+            position: relative;
+            width: 100%;
+            height: 100vh;
+        }
+        
+        #map {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            left: 0;
+            top: 0;
+        }
+        
+        ul,
+        li {
+            list-style: none;
+        }
+        
+        ul {
+            position: absolute;
+            left: 30px;
+            top: 30px;
+            display: flex;
+        }
+        
+        ul>li {
+            padding: 0 10px 0 10px;
+            height: 35px;
+            background-color: white;
+            border-right: 1px solid #909399;
+            line-height: 35px;
+            color: #909399;
+            display: block;
+            cursor: pointer;
+            border-top: 1px solid #909399;
+            border-bottom: 1px solid #909399;
+        }
+        
+        ul>li:last-child {
+            border-right: 1px solid #909399;
+        }
+        
+        ul>li:first-child {
+            border-left: 1px solid #909399;
+        }
+        
+        ul .active {
+            background-color: #909399;
+            color: white;
+        }
+    </style>
+    <title>鼠标工具绘制</title>
+</head>
+
+<body>
+    <div class="box">
+        <div id="map"></div>
+        <ul>
+            <li onclick="toolClick('marker',0)">画点</li>
+            <li onclick="toolClick('polyline',1)">画折线</li>
+            <li onclick="toolClick('circle',2)">画圆</li>
+            <li onclick="toolClick('polygon',3)">画多边形</li>
+            <li onclick="toolClick('rectangle',4)">画矩形</li>
+            <li onclick="toolClick('closeAll',5)">清除绘图</li>
+        </ul>
+    </div>
+
+    <script src="https://webapi.amap.com/maps?v=1.4.15&key=213a46a4fa08833acd702ae048a2148a&plugin=AMap.MouseTool"></script>
+    <script type="text/javascript">
+        const box = document.getElementsByClassName("box")[0]
+        const li = box.querySelectorAll("li")
+        let index = 0
+
+        function moveActive() {
+            for (var i = 0; i < li.length; i++) {
+                li[i].className = ''
+            }
+        }
+
+        function toolClick(e, i) {
+            moveActive()
+            index = i
+            li[index].className = 'active'
+            switch (e) {
+                case 'marker':
+                    {
+                        mouseTool.marker({
+                            //同Marker的Option设置
+                        });
+                        break;
+                    }
+                case 'polyline':
+                    {
+                        mouseTool.polyline({
+                            strokeColor: '#80d8ff'
+                        });
+                        break;
+                    }
+                case 'polygon':
+                    {
+                        mouseTool.polygon({
+                            fillColor: '#00b0ff',
+                            strokeColor: '#80d8ff'
+                        });
+                        break;
+                    }
+                case 'rectangle':
+                    {
+                        mouseTool.rectangle({
+                            fillColor: '#00b0ff',
+                            strokeColor: '#80d8ff'
+                        });
+                        break;
+                    }
+                case 'circle':
+                    {
+                        mouseTool.circle({
+                            fillColor: '#00b0ff',
+                            strokeColor: '#80d8ff'
+                        });
+                        break;
+                    }
+                case 'closeAll':
+                    {
+                        mouseTool.close(true) //关闭，并清除覆盖物
+                        moveActive()
+                        break;
+                    }
+            }
+        }
+        var map = new AMap.Map('map', {
+            zoom: 14,
+            center: [106.559389, 29.559821],
+        });
+
+        var mouseTool = new AMap.MouseTool(map);
+        //监听draw事件可获取画好的覆盖物
+        var overlays = [];
+        mouseTool.on('draw', function(e) {
+            if (index === 0) {
+                // 点坐标
+                overlays = {
+                    lng: e.obj.getPosition().lng,
+                    lat: e.obj.getPosition().lat
+                }
+            } else {
+                // 其他图形坐标
+                overlays = e.obj.getPath().map((item) => {
+                    return {
+                        lng: item.lng,
+                        lat: item.lat
+                    }
+                })
+            }
+            mouseTool.close()
+            moveActive()
+                // 打印使用图形工具获取的坐标
+            console.log(overlays)
+        })
+    </script>
+</body>
+
+</html>
