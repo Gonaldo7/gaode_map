@@ -46,7 +46,7 @@
             [106.574367, 29.557917],
             [106.552609, 29.559261],
             [106.576169, 29.55508]
-        ];
+        ]; // 传输的轨迹经纬度集合
 
         var map = new AMap.Map("container", {
             resizeEnable: true,
@@ -54,6 +54,7 @@
             zoom: 17
         });
 
+        // 起始坐标位置
         marker = new AMap.Marker({
             map: map,
             position: [106.577199, 29.557395],
@@ -63,10 +64,10 @@
             angle: -90,
         });
 
-        // 绘制轨迹
+        // 绘制轨迹路线
         var polyline = new AMap.Polyline({
             map: map,
-            path: lineArr,
+            path: lineArr, // 轨迹坐标经纬度集合
             showDir: true,
             strokeColor: "#28F", //线颜色
             // strokeOpacity: 1,     //线透明度
@@ -91,7 +92,7 @@
         map.setFitView();
 
         function startAnimation() {
-            marker.moveAlong(lineArr, 1000);
+            marker.moveAlong(lineArr, 1000); // 动画时间
         }
 
         function pauseAnimation() {

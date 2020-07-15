@@ -73,7 +73,7 @@
 
         // 搜索点击
         function searchClick() {
-            if (marker != null) marker.setMap(null)
+            if (marker != null) map.clearMap()
 
             var inputVal = document.getElementById("searchVal").value
             placeSearch.search(inputVal, function(status, result) {
