@@ -49,7 +49,7 @@
             height: 30px;
         }
     </style>
-    <script type="text/javascript" src="https://webapi.amap.com/maps?v=1.4.15&key=213a46a4fa08833acd702ae048a2148a&plugin=AMap.PlaceSearch"></script>
+    <script type="text/javascript" src="https://webapi.amap.com/maps?v=1.4.15&key=你的密钥&plugin=AMap.PlaceSearch"></script>
 </head>
 
 <body>
@@ -66,13 +66,15 @@
             center: [106.559389, 29.559821],
         });
         var marker = null;
+        // 创建搜索实例
+        var placeSearch = new AMap.PlaceSearch({
+            city: ''
+        })
 
         // 搜索点击
         function searchClick() {
             if (marker != null) marker.setMap(null)
-            var placeSearch = new AMap.PlaceSearch({
-                city: ''
-            })
+
             var inputVal = document.getElementById("searchVal").value
             placeSearch.search(inputVal, function(status, result) {
                 const poi = result.poiList.pois

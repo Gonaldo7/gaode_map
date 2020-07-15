@@ -1,0 +1,199 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no, width=device-width">
+    <title>拉框缩放-测量工具-位置采集</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+        
+        .box {
+            position: relative;
+            width: 100%;
+            height: 100vh;
+        }
+        
+        #map {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            left: 0;
+            top: 0;
+        }
+        
+        ul,
+        li {
+            list-style: none;
+        }
+        
+        ul {
+            position: absolute;
+            left: 30px;
+            top: 30px;
+            display: flex;
+        }
+        
+        ul>li {
+            padding: 0 10px 0 10px;
+            height: 35px;
+            background-color: white;
+            border-right: 1px solid #909399;
+            line-height: 35px;
+            color: #909399;
+            display: block;
+            cursor: pointer;
+            border-top: 1px solid #909399;
+            border-bottom: 1px solid #909399;
+        }
+        
+        ul>li:last-child {
+            border-right: 1px solid #909399;
+        }
+        
+        ul>li:first-child {
+            border-left: 1px solid #909399;
+        }
+        
+        ul .active {
+            background-color: #909399;
+            color: white;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="box">
+        <div id="map"></div>
+        <ul>
+            <li onclick="toolClick('zoomIn',0)">拉框放大</li>
+            <li onclick="toolClick('zoomOut',1)">拉框缩小</li>
+            <li onclick="toolClick('ruler',2)">测量工具</li>
+            <li onclick="toolClick('local',3)">位置采集</li>
+            <li onclick="toolClick('close',4)">关闭</li>
+        </ul>
+    </div>
+    <script src="https://webapi.amap.com/maps?v=1.4.15&key=你的密钥&plugin=AMap.MouseTool,AMap.RangingTool,AMap.Geocoder"></script>
+    <script type="text/javascript">
+        const box = document.getElementsByClassName("box")[0]
+        const li = box.querySelectorAll("li")
+
+        function moveActive() {
+            for (var i = 0; i < li.length; i++) {
+                li[i].className = ''
+            }
+        }
+        /*--  
+           直接从下面开始,上面都是浮云
+        --*/
+
+        // 初始化地图
+        var map = new AMap.Map('map', {
+            zoom: 6,
+            resizeEnable: true,
+            center: [106.559389, 29.559821],
+        });
+        var marker = null,
+            // 拉框工具
+            mouseTool = new AMap.MouseTool(map),
+            // 测量工具
+            ruler = new AMap.RangingTool(map),
+            // 坐标转换位置信息
+            geocoder = null;
+
+        // 状态tabs栏点击
+        function toolClick(type, index) {
+            moveActive()
+            closeTool()
+            li[index].className = 'active'
+            switch (type) {
+                case 'zoomIn':
+                    {
+                        mouseTool.rectZoomIn({
+                            strokeColor: '#80d8ff',
+                            fillColor: '#80d8ff',
+                            fillOpacity: 0.3
+                        });
+                        break;
+                    }
+                case 'zoomOut':
+                    {
+                        mouseTool.rectZoomOut({
+                            strokeColor: '#80d8ff',
+                            fillColor: '#80d8ff',
+                            fillOpacity: 0.3
+                        });
+                        break;
+                    }
+                case 'ruler':
+                    {
+                        ruler.turnOn();
+                        break;
+                    }
+                case 'local':
+                    {
+                        geocoder = new AMap.Geocoder({
+                            radius: 1000, // 位置获取范围
+                            extensions: "all"
+                        });
+                        localClick();
+                        break;
+                    }
+                case 'close':
+                    {
+                        closeTool()
+                        break;
+                    }
+            }
+        }
+
+        // 位置采集
+        function localClick() {
+            map.on('click', function(e) {
+                if (geocoder === null) return
+                if (marker !== null) map.clearMap()
+
+                let lnglat = [e.lnglat.lng, e.lnglat.lat]
+                geocoder.getAddress(lnglat, function(status, result) {
+                    if (status === 'complete' && result.info === 'OK') {
+                        if (result.regeocode.pois.length > 0) {
+                            var address = result.regeocode.formattedAddress; //返回地址描述
+                            console.log(result.regeocode.pois)
+                            marker = new AMap.Marker({
+                                position: new AMap.LngLat(result.regeocode.pois[0].location.lng, result.regeocode.pois[0].location.lat),
+                                offset: new AMap.Pixel(-10, -32),
+                            }); // 添加坐标点及弹窗信息
+                            openWindow(result.regeocode)
+                        } else {
+                            alert('当前位置暂无信息')
+                        }
+                    }
+                })
+            })
+        }
+
+        // 坐标点信息弹窗
+        function openWindow(local) {
+            var infoWindow = new AMap.InfoWindow({
+                content: "当前位置: " + local.formattedAddress, //使用默认信息窗体框样式，显示信息内容
+                offset: new AMap.Pixel(0, -32),
+            });
+            infoWindow.open(map, new AMap.LngLat(local.pois[0].location.lng, local.pois[0].location.lat));
+            map.add(marker);
+        }
+
+        // 关闭清除地图所有状态
+        function closeTool() {
+            mouseTool.close(true) // 拉框关闭
+            geocoder = null // 清除位置信息转换器
+            map.clearMap() // 清除所有图形工具
+            ruler.turnOff() // 关闭测量工具
+        }
+    </script>
+</body>
+
+</html>

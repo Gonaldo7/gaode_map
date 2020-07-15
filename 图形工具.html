@@ -80,7 +80,7 @@
         </ul>
     </div>
 
-    <script src="https://webapi.amap.com/maps?v=1.4.15&key=213a46a4fa08833acd702ae048a2148a&plugin=AMap.MouseTool"></script>
+    <script src="https://webapi.amap.com/maps?v=1.4.15&key=你的密钥&plugin=AMap.MouseTool"></script>
     <script type="text/javascript">
         const box = document.getElementsByClassName("box")[0]
         const li = box.querySelectorAll("li")
@@ -92,6 +92,7 @@
             }
         }
 
+        // 导航栏类型选择
         function toolClick(e, i) {
             moveActive()
             index = i
@@ -148,10 +149,12 @@
             center: [106.559389, 29.559821],
         });
 
+        // 创建工具实例
         var mouseTool = new AMap.MouseTool(map);
         //监听draw事件可获取画好的覆盖物
         var overlays = [];
         mouseTool.on('draw', function(e) {
+            console.log(e.obj)
             if (index === 0) {
                 // 点坐标
                 overlays = {
@@ -167,7 +170,7 @@
                     }
                 })
             }
-            mouseTool.close()
+            mouseTool.close() // 完成一次关闭一次工具
             moveActive()
                 // 打印使用图形工具获取的坐标
             console.log(overlays)
