@@ -39,7 +39,7 @@
             <input type="button" class="btn" value="停止动画" id="stop" onclick="stopAnimation()" />
         </div>
     </div>
-    <script type="text/javascript" src="https://webapi.amap.com/maps?v=1.4.15&key=你的密钥"></script>
+    <script type="text/javascript" src="https://webapi.amap.com/maps?v=1.4.15&key=yourKey"></script>
     <script>
         var marker, lineArr = [
             [106.577199, 29.557395],
@@ -75,6 +75,7 @@
             // strokeStyle: "solid"  //线样式
         });
 
+        // 路线样式
         var passedPolyline = new AMap.Polyline({
             map: map,
             // path: lineArr,

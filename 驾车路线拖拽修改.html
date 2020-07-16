@@ -1,0 +1,47 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no, width=device-width">
+    <title>车辆路线拖拽修改获取经度纬度</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+        
+        #map {
+            width: 100%;
+            height: 100vh;
+        }
+    </style>
+    <script type="text/javascript" src="https://webapi.amap.com/maps?v=1.4.15&key=yourKey"></script>
+</head>
+
+<body>
+    <div id="map"></div>
+
+    <script type="text/javascript">
+        var map, route;
+        //基本地图加载
+        map = new AMap.Map("map", {
+            resizeEnable: true
+        });
+
+        //绘制初始路径坐标
+        var path = [];
+        path.push([116.303843, 39.983412]);
+        path.push([116.321354, 39.896436]);
+
+        route = new AMap.DragRoute(map, path, AMap.DrivingPolicy.LEAST_FEE); //构造拖拽导航类
+        route.search(); //查询导航路径并开启拖拽导航
+        route.on('complete', function(data) {
+            console.log(route.getRoute()) // 返回路线中所有坐标
+            console.log(data.data); // 返回起点与终点坐标
+        })
+    </script>
+</body>
+
+</html>

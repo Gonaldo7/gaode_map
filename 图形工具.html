@@ -80,7 +80,7 @@
         </ul>
     </div>
 
-    <script src="https://webapi.amap.com/maps?v=1.4.15&key=你的密钥&plugin=AMap.MouseTool"></script>
+    <script src="https://webapi.amap.com/maps?v=1.4.15&key=yourKey&plugin=AMap.MouseTool"></script>
     <script type="text/javascript">
         const box = document.getElementsByClassName("box")[0]
         const li = box.querySelectorAll("li")
@@ -115,24 +115,33 @@
                 case 'polygon':
                     {
                         mouseTool.polygon({
-                            fillColor: '#00b0ff',
-                            strokeColor: '#80d8ff'
+                            strokeColor: "#FF33FF", //线颜色
+                            strokeOpacity: 0.2, //线透明度
+                            strokeWeight: 3, //线宽
+                            fillColor: "#1791fc", //填充色
+                            fillOpacity: 0.35 //填充透明度
                         });
                         break;
                     }
                 case 'rectangle':
                     {
                         mouseTool.rectangle({
-                            fillColor: '#00b0ff',
-                            strokeColor: '#80d8ff'
+                            strokeColor: "#FF33FF", //线颜色
+                            strokeOpacity: 0.2, //线透明度
+                            strokeWeight: 3, //线宽
+                            fillColor: "#1791fc", //填充色
+                            fillOpacity: 0.35 //填充透明度
                         });
                         break;
                     }
                 case 'circle':
                     {
                         mouseTool.circle({
-                            fillColor: '#00b0ff',
-                            strokeColor: '#80d8ff'
+                            strokeColor: "#3366FF", //边框线颜色
+                            strokeOpacity: 0.3, //边框线透明度
+                            strokeWeight: 3, //边框线宽
+                            fillColor: "#FFA500", //填充色
+                            fillOpacity: 0.35 //填充透明度
                         });
                         break;
                     }
@@ -172,7 +181,7 @@
             }
             mouseTool.close() // 完成一次关闭一次工具
             moveActive()
-                // 打印使用图形工具获取的坐标
+                // 打印使用图形工具获取的经纬度
             console.log(overlays)
         })
     </script>

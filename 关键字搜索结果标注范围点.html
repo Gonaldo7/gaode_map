@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="initial-scale=1.0, user-scalable=no, width=device-width">
-    <title>关键字查询自我展示</title>
+    <title>地名搜索及范围区域</title>
     <style>
         * {
             margin: 0;
@@ -30,7 +30,6 @@
             position: absolute;
             right: 20px;
             top: 20px;
-            width: 240px;
             height: 35px;
             display: flex;
             justify-content: space-between;
@@ -45,17 +44,19 @@
         }
         
         .search button {
-            width: 100px;
+            width: 120px;
+            font-size: 14px;
             height: 30px;
         }
     </style>
-    <script type="text/javascript" src="https://webapi.amap.com/maps?v=1.4.15&key=你的密钥&plugin=AMap.PlaceSearch"></script>
+    <script type="text/javascript" src="https://webapi.amap.com/maps?v=1.4.15&key=yourKey&plugin=AMap.PlaceSearch,AMap.CircleEditor"></script>
 </head>
 
 <body>
     <div class="box">
         <div id="map"></div>
         <div class="search">
+            <input type="number" id="radius" placeholder="请输入范围区域(单位:公里)" />
             <input type="text" id="searchVal" placeholder="请输入地名搜索" />
             <button onclick="searchClick()">搜索</button>
         </div>
@@ -65,7 +66,9 @@
             resizeEnable: true,
             center: [106.559389, 29.559821],
         });
-        var marker = null;
+        var marker = null,
+            circle = null,
+            circleEditor = null;
         // 创建搜索实例
         var placeSearch = new AMap.PlaceSearch({
             city: ''
@@ -75,7 +78,8 @@
         function searchClick() {
             if (marker != null) map.clearMap()
 
-            var inputVal = document.getElementById("searchVal").value
+            var inputVal = document.getElementById("searchVal").value,
+                radius = document.getElementById("radius").value === "" ? 500 : Number(document.getElementById("radius").value) / 2 * 1000;
             placeSearch.search(inputVal, function(status, result) {
                 const poi = result.poiList.pois
                     // 如果关键词搜索的位置匹配
@@ -86,14 +90,39 @@
                     });
                     openWindow(poi[0])
                     marker.on('click', () => {
-                        openWindow(poi[0])
-                    })
+                            openWindow(poi[0])
+                        })
+                        // 圆形范围区域展示
+                    var local = [result.poiList.pois[0].location.lng, result.poiList.pois[0].location.lat]
+                    cirleFun(local, radius)
 
                     // 坐标点经度纬度打印
                     console.log(result.poiList.pois[0])
+                } else {
+                    alert("请输入详细点的位置")
                 }
                 map.setFitView();
             });
+        }
+
+        // 圆形
+        function cirleFun(location, radius) {
+            circle = new AMap.Circle({
+                center: location,
+                radius: radius, //半径:默认米为单位
+                strokeColor: "#67C23A", // 外边框颜色
+                strokeWeight: 3, //外边框粗细度
+                strokeOpacity: 0.6, //外边框透明度
+                // strokeStyle: 'dashed', // 外边框是否虚线
+                strokeDasharray: [10, 10],
+                fillColor: '#409EFF', // 圆形内部填充颜色
+                fillOpacity: 0.4, // 圆形内部透明度
+                zIndex: 50,
+            })
+
+            circle.setMap(map)
+                // 缩放地图到合适的视野级别
+            map.setFitView([circle])
         }
 
         // 坐标点信息弹窗

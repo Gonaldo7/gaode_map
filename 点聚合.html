@@ -113,7 +113,7 @@
     </div>
     <script type="text/javascript">
         // 异步加载地图
-        var url = 'https://webapi.amap.com/maps?v=1.4.15&key=你的密钥&plugin=AMap.MarkerClusterer,AMap.MapType&callback=asyncMap';
+        var url = 'https://webapi.amap.com/maps?v=1.4.15&key=yourKey&plugin=AMap.MarkerClusterer,AMap.MapType&callback=asyncMap';
         var jsapi = document.createElement('script');
         jsapi.charset = 'utf-8';
         jsapi.src = url;
@@ -132,10 +132,6 @@
             map.addControl(new AMap.MapType({
                 defaultType: 0 // 0普通 1卫星
             }));
-            // 视图位置切换
-            // setTimeout(() => {
-            //     map.setCenter([116.322056, 39.89491])
-            // }, 3000)
             gatherMarker()
         }
 
