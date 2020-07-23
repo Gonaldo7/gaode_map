@@ -1,0 +1,102 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no, width=device-width">
+    <title>夜间地图显示热力图</title>
+    <style>
+        html,
+        body,
+        #map {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="map"></div>
+
+    <script src="https://webapi.amap.com/maps?v=1.4.15&key=你的密钥"></script>
+    <!-- <script src="https://a.amap.com/jsapi_demos/static/resource/heatmapData.js"></script> 使用大量假数据看效果-->
+    <script>
+        if (!isSupportCanvas()) {
+            alert('热力图仅对支持canvas的浏览器适用,您所使用的浏览器不能使用热力图功能,请换个浏览器试试~')
+        }
+        //判断浏览区是否支持canvas
+        function isSupportCanvas() {
+            var elem = document.createElement('canvas');
+            return !!(elem.getContext && elem.getContext('2d'));
+        }
+
+        // 自定义夜间地图
+        var map = new AMap.Map("map", {
+            resizeEnable: true,
+            center: [106.559915, 29.557852],
+            zoom: 11,
+            mapStyle: 'amap://styles/54c13ac3e16a7a4cd08b61192ea4cb80', //自定义地图style连接
+        });
+
+        //详细的参数,可以查看heatmap.js的文档 http://www.patrick-wied.at/static/heatmapjs/docs.html
+        var heatmap,
+            list = [{
+                lng: 106.561718,
+                lat: 29.560017,
+                count: 520
+            }, {
+                lng: 106.577854,
+                lat: 29.558001,
+                count: 510
+            }, {
+                lng: 106.560173,
+                lat: 29.562182,
+                count: 451
+            }, {
+                lng: 106.578798,
+                lat: 29.557479,
+                count: 651
+            }, {
+                lng: 106.584205,
+                lat: 29.558449,
+                count: 840
+            }, {
+                lng: 106.549186,
+                lat: 29.552327,
+                count: 460
+            }, {
+                lng: 106.562833,
+                lat: 29.57241,
+                count: 750
+            }, {
+                lng: 106.574335,
+                lat: 29.553074,
+                count: 620
+            }];
+        map.plugin(["AMap.Heatmap"], function() {
+            //初始化heatmap对象
+            heatmap = new AMap.Heatmap(map, {
+                radius: 25, //给定半径
+                opacity: [0, 0.8],
+                gradient: {
+                    0.5: 'blue',
+                    0.65: 'rgb(117,211,248)',
+                    0.7: 'rgb(0, 255, 0)',
+                    0.9: '#ffea00',
+                    1.0: 'red'
+                }
+                // 设置热力图颜色
+            });
+            //设置数据集：该数据为北京部分“公园”数据
+            heatmap.setDataSet({
+                data: list, // 热力图挂载数据
+                max: 10 //max代表热点图区分热度的界限，某地区的点数超过max一定比例，即显示对应gradient配置的颜色
+            });
+        });
+    </script>
+</body>
+
+</html>

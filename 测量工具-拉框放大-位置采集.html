@@ -78,7 +78,7 @@
             <li onclick="toolClick('close',5)">关闭</li>
         </ul>
     </div>
-    <script src="https://webapi.amap.com/maps?v=1.4.15&key=yourKey&plugin=AMap.MouseTool,AMap.RangingTool,AMap.Geocoder"></script>
+    <script src="https://webapi.amap.com/maps?v=1.4.15&key=你的密钥&plugin=AMap.MouseTool,AMap.RangingTool,AMap.Geocoder"></script>
     <script type="text/javascript">
         const box = document.getElementsByClassName("box")[0]
         const li = box.querySelectorAll("li")
@@ -150,7 +150,7 @@
                         marker = new AMap.Marker({
                             position: new AMap.LngLat(116.397451, 39.909187),
                             offset: new AMap.Pixel(-10, -32),
-                        }); // 添加坐标点
+                        }); // 添加坐标点及弹窗信息
                         map.setZoom(12)
                         map.add(marker);
                         break;

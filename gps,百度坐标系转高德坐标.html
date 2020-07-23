@@ -1,0 +1,76 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no, width=device-width">
+    <title>其他坐标变换成高德坐标</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+        
+        #map {
+            width: 100%;
+            height: 100vh;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="map"></div>
+
+    <script type="text/javascript" src="https://webapi.amap.com/maps?v=1.4.15&key=你的密钥&plugin=AMap.Geocoder"></script>
+    <script type="text/javascript">
+        var map = new AMap.Map("map", {
+            resizeEnable: true,
+            center: [106.584771, 29.568187],
+            zoom: 15
+        });
+
+        // 百度坐标在高德地图中显示偏差
+        var lnglat = [106.584771, 29.568187];
+        var marker1 = new AMap.Marker({
+            position: lnglat,
+            icon: "https://webapi.amap.com/theme/v1.3/markers/n/mark_r.png"
+        });
+        map.add(marker1);
+        marker1.setLabel({
+            offset: new AMap.Pixel(-10, -20),
+            content: "百度坐标系中洪崖洞位置在高德中显示"
+        });
+
+        // 将百度坐标转换成高德坐标，显示对比位置偏差
+        AMap.convertFrom(lnglat, 'baidu', function(status, result) {
+            if (result.info === 'ok') {
+                var resLnglat = result.locations[0];
+                var marker2 = new AMap.Marker({
+                    position: resLnglat,
+                });
+                marker2.setLabel({
+                    offset: new AMap.Pixel(-10, -20),
+                    content: "百度坐标转换高德后中洪崖洞位置（正确）"
+                });
+                map.add(marker2);
+            }
+        });
+
+        /*--
+           项目中使用就直接复制下面函数即可
+        --*/
+        // 坐标转换函数封装 lnglat=[106.584771, 29.568187]格式经纬度坐标，type坐标类型“gps”,"baidu"
+        function transformCoor(lnglat, type) {
+            AMap.convertFrom(lnglat, type, function(status, result) {
+                if (result.info === 'ok') {
+                    var local = [result.locations[0].lng, result.locations[0].lat]
+                    console.log(local)
+                }
+            })
+        }
+        transformCoor(lnglat, 'baidu')
+    </script>
+</body>
+
+</html>

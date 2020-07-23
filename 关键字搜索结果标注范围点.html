@@ -49,7 +49,7 @@
             height: 30px;
         }
     </style>
-    <script type="text/javascript" src="https://webapi.amap.com/maps?v=1.4.15&key=yourKey&plugin=AMap.PlaceSearch,AMap.CircleEditor"></script>
+    <script type="text/javascript" src="https://webapi.amap.com/maps?v=1.4.15&key=你的密钥&plugin=AMap.PlaceSearch,AMap.CircleEditor"></script>
 </head>
 
 <body>
@@ -89,14 +89,13 @@
                         title: poi[0].name,
                     });
                     openWindow(poi[0])
-                    marker.on('click', () => {
-                            openWindow(poi[0])
-                        })
                         // 圆形范围区域展示
                     var local = [result.poiList.pois[0].location.lng, result.poiList.pois[0].location.lat]
                     cirleFun(local, radius)
-
-                    // 坐标点经度纬度打印
+                    marker.on('click', () => {
+                            openWindow(poi[0])
+                        })
+                        // 坐标点经度纬度打印
                     console.log(result.poiList.pois[0])
                 } else {
                     alert("请输入详细点的位置")
